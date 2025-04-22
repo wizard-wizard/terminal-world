@@ -22,7 +22,10 @@ function assert(condition, message = "Assertion failed") {
 
 function runTests() {
     const container = document.createElement("div");
-    container.style = "background: #f8f5ef; border: 2px dashed #e4e4e4; padding: 1rem; font-family: monospace; margin-top: 2rem";
+    container.style = "background: ghostwhite; border: 2px dashed grey; padding: 1rem; font-family: monospace; margin-top: 2rem";
+
+    let passed = 0;
+    let failed = 0;
 
     testResults.forEach(result => {
         const line = document.createElement("div");
@@ -33,11 +36,23 @@ function runTests() {
         } else if (result.type === "pass") {
             line.textContent = `☺︎ ${result.desc}`;
             line.style.color = "green";
+            passed++;
         } else if (result.type === "fail") {
             line.textContent = `☹︎ ${result.desc}`;
             line.style.color = "red";
+            passed++;
         }
         container.appendChild(line);
-    })
+    });
+
+    const summary = document.createElement("div");
+    summary.style = "margin-top: 1rem; font-weight: bold;";
+    summary.innerHTML = `
+    <hr>
+    Tests completed at ${new Date().toLocaleTimeString()} <br>
+    ✅ Passed: ${passed} &nbsp; ❌ Failed: ${failed}
+  `;
+    container.appendChild(summary);
+
     document.body.appendChild(container);
 }
