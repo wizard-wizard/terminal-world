@@ -6,15 +6,54 @@ function render(text) {
     output.scrollTop = output.scrollHeight;
 }
 
+class Room {
+    constructor(description, exits = {}) {
+        this.description = description;
+        this.exits = exits;
+    }
+}
+
+const rooms = {
+    start: new Room(
+        "You are in a quiet little room. The wallpaper is smiling.",
+        { north: "attic"}
+    ),
+    attic: new Room(
+        "You are in a dusty attic full of neatly labeled boxes.",
+        { south: "start"}
+    )
+};
+
+const state = {
+    location: "start"
+};
+
+
 function processInput(input) {
     const command = input.trim().toLowerCase();
 
     if (command === "look") {
-        render("You are in the abyss. It's not very cozy here, but it's yours.")
+        const currentRoom = rooms[state.location];
+        render(currentRoom.description);
         return;
     }
-    render("That won't work here.");
+
+    if (command.startsWith("go ")) {
+        const direction = command.slice(3); // e.g., "north"
+        const currentRoom = rooms[state.location];
+
+        if (currentRoom.exits[direction]) {
+            state.location = currentRoom.exits[direction];
+            render(`You go ${direction}.`);
+            render(rooms[state.location].description);
+        } else {
+            render("You can't go that way.");
+        }
+        return;
+    }
+    render("That won't work here.")
 }
+
 console.log("Script loaded: mud.js"); // Sanity check, remove when sane
 
 document.addEventListener("DOMContentLoaded", () => {

@@ -40,7 +40,7 @@ function runTests() {
         } else if (result.type === "fail") {
             line.textContent = `☹︎ ${result.desc}`;
             line.style.color = "red";
-            passed++;
+            failed++;
         }
         container.appendChild(line);
     });
@@ -50,7 +50,7 @@ function runTests() {
     summary.innerHTML = `
     <hr>
     Tests completed at ${new Date().toLocaleTimeString()} <br>
-    ✅ Passed: ${passed} &nbsp; ❌ Failed: ${failed}
+    🔆 Passed: ${passed} &nbsp; 💔 Failed: ${failed}
   `;
     container.appendChild(summary);
 
