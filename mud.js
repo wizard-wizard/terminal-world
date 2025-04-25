@@ -210,18 +210,22 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (inputBuffer.length > 0) {
                 inputBuffer = inputBuffer.slice(0, -1);
 
+                // Find previous text node
                 let prev = cursor.previousSibling;
-
                 while (prev && prev.nodeType !== Node.TEXT_NODE) {
                     prev = prev.previousSibling;
                 }
 
                 if (prev) {
+                    // Remove last character
                     prev.textContent = prev.textContent.slice(0, -1);
                     if (prev.textContent.length === 0) {
-                        terminal.removeChild(prev);
+                        prev.remove(); // safer than terminal.removeChild(prev)
                     }
                 }
+            } else {
+                // No input buffer left, just ignore
+                // (no errors, no flickers, no bad feels)
             }
         }
         else if (e.key === "Enter") {
