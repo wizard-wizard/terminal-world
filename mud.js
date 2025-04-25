@@ -2,9 +2,22 @@
 
 function render(text) {
     const output = document.getElementById("output");
-    output.innerText = `\n\n${text}`;
-    output.scrollTop = output.scrollHeight;
+    console.log("🖋️ Rendering:", JSON.stringify(text));
+
+    if (!output) {
+        console.error("❌ Output element not found!");
+        return;
+    }
+
+    // New: force log of current content
+    console.log("🔍 Before render, output innerText is:", output.innerText);
+
+    output.innerText += `\n\n${text}`;
+
+    console.log("✅ After render, output innerText is:", output.innerText);
 }
+
+//render("💥 HELLO FROM THE TOP OF THE FILE 💥");
 
 class Room {
     constructor(descriptionFn, exits = {}, actions = {}) {
@@ -14,44 +27,25 @@ class Room {
     }
 }
 
-const rooms = {
-    start: new Room(
-        (state) => {
-            return " You are in a quiet little room. The wallpaper is smiling.";
-        },
-        { north: "attic"},
-        {
-            sit: () => " You sit cross-legged on the floor. The carpet is soft and warm."
-        }
-    ),
-    attic: new Room(
-        (state) => {
-            let desc = " You are in a dusty attic full of neatly labeled boxes."
-            if (state.flags.hasSatInAttic) {
-                desc  += "The rocking chair casts a contented shadow. It remembers you.";
-            } else {
-                desc += " A rocking chair waits patiently in the corner.";
-            }
-            if (state.flags.hasPettedCat) {
-                desc += " The cat is closer now, almost friendly.";
-            } else {
-                desc += " A cat eyes you suspiciously from the shadows."
-            }
-            return desc;
-        },
-        { south: "start"},
-        {
-            sit: () => {
-                state.flags.hasSatInAttic = true;
-                return "You settle down into a rocking chair. It creaks with approval."
-            },
-            pet: () => {
-                state.flags.hasPettedCat = true;
-                return "The cat purrs enthusiastically."
-            }
-        }
-    )
-};
+function createRoomsFromData(data) {
+    for (const id in data) {
+        const roomData = data[id];
+
+        console.log(`Creating room: ${id}`);
+        console.log("  description:", roomData.description);
+
+        const descFn = typeof roomData.description === "function"
+            ? roomData.description
+            : () => roomData.description;
+
+        rooms[id] = new Room(
+            descFn,
+            roomData.exits || {},
+            roomData.actions || {}
+        );
+    }
+}
+const rooms = {};
 
 const state = {
     location: "start",
@@ -95,9 +89,35 @@ function processInput(input) {
 }
 
 console.log("Script loaded: mud.js"); // Sanity check, remove when sane
+// render("This is a test. If you see this, rendering works.");
 
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("Concept MUD loaded");
+function showRoom() {
+    const currentRoom = rooms[state.location];
+    console.log("Calling showRoom()");
+    console.log("Current room ID:", state.location);
+    console.log("Room object:", currentRoom);
+
+    if (!currentRoom) {
+        render("You are nowhere. The void echoes.");
+        return;
+    }
+
+    const desc = currentRoom.getDescription(state);
+    console.log("📝 Room description:", desc);
+    render(desc);
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadWorld(); // from index.html
+    createRoomsFromData(window.MUD_WORLD_DATA);
+
+    console.log("World loaded:", Object.keys(rooms));
+
+    state.location = "start";
+
+    console.log("DOM fully loaded, about to render welcome text...");
+    render("Welcome to the Worldbuilder.");
+    showRoom();
 
     const input = document.getElementById("input");
     if (!input) {

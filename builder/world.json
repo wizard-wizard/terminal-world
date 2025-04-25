@@ -5,5 +5,17 @@
       "west": "hall",
       "south": "observatory"
     }
+  },
+  "start": {
+    "description": "You are in a quiet room with soft lighting.",
+    "exits": {
+      "north": "attic"
+    }
+  },
+  "attic": {
+    "description": "Dust swirls in beams of light between old boxes.",
+    "exits": {
+      "south": "start"
+    }
   }
 }
