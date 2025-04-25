@@ -27,6 +27,34 @@ describe("Command system" , () => {
         processInput("go north");
         assert(state.location === "attic", "Player should be in the attic after going north");
     });
+
+    it("executes a room-specific command", () => {
+        state.location = "attic";
+        let output = "";
+        const originalRender = window.render;
+        window.render = (text) => output += text;
+
+        processInput("sit");
+
+        window.render = originalRender;
+        assert(output.includes("rocking chair"), "Should describe sitting in the attic chair");
+    });
+
+    it("updates description based on flags", () => {
+        state.location = "attic";
+        state.flags.hasSatInAttic = true;
+        state.flags.hasPettedCat = false;
+
+        let output = "";
+        const originalRender = window.render;
+        window.render = (text) => output += text;
+
+        processInput("look");
+
+        window.render = originalRender;
+        assert(output.includes("contented"), "Should reflect sitting");
+        assert(output.includes("suspiciously"), "Cat hasn't been petted");
+    });
 });
 
 window.onload = () => {
