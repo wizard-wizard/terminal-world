@@ -1,14 +1,48 @@
-// --- Core Typing and Rendering Logic ---
+let inputBuffer = "";
+let cursor;
+let playerTurn = false;
+const rooms = {};
+const state = {
+    location: "start",
+    flags: {}
+};
+
+// --- Utility Functions ---
 
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function setPromptActive(active) {
+    playerTurn = active;
+    const inputArea = document.getElementById("input-area");
+
+    if (active) {
+        while (inputArea.firstChild) {
+            inputArea.removeChild(inputArea.firstChild);
+        }
+
+        const promptText = document.createTextNode("> ");
+        inputArea.appendChild(promptText);
+
+        cursor = document.createElement("span");
+        cursor.className = "cursor";
+        cursor.innerText = "_";
+        inputArea.appendChild(cursor);
+
+        inputBuffer = "";
+    } else {
+        inputArea.innerHTML = "";
+    }
+}
+
 async function typeLine(text, type = "default") {
-    const output = document.getElementById("terminal");
+    playerTurn = false;
+
+    const outputArea = document.getElementById("output-area");
     const line = document.createElement("div");
     line.className = `line ${type}`;
-    output.appendChild(line);
+    outputArea.appendChild(line);
 
     let index = 0;
     const glitchChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{};':\",./<>?";
@@ -29,40 +63,31 @@ async function typeLine(text, type = "default") {
 
             line.innerText += realChar;
             index++;
-            output.scrollTop = output.scrollHeight;
+            outputArea.scrollTop = outputArea.scrollHeight;
 
             setTimeout(typeNext, 20);
+        } else {
+            playerTurn = true;
+            setPromptActive(true);
         }
     }
 
     typeNext();
 }
 
-// --- Terminal and State Setup ---
-
-const rooms = {};
-
-const state = {
-    location: "start",
-    flags: {}
-};
-
-let terminal;
-let cursor;
-
 function render(text, options = {}) {
+    const outputArea = document.getElementById("output-area");
     const outputLine = document.createElement("div");
-    outputLine.className = "output-line"; // you can style this later
-
+    outputLine.className = "output-line";
     outputLine.innerText = text;
-    terminal.insertBefore(outputLine, cursor.parentElement);
+    outputArea.appendChild(outputLine);
 
     if (!options.noScroll) {
-        terminal.scrollTop = terminal.scrollHeight;
+        outputArea.scrollTop = outputArea.scrollHeight;
     }
 }
 
-// --- Room Class and World Loader ---
+// --- Room and World Loader ---
 
 class Room {
     constructor(descriptionFn, exits = {}, actions = {}) {
@@ -93,7 +118,7 @@ async function loadWorld() {
     createRoomsFromData(data);
 }
 
-// --- Command Processing ---
+// --- Command Handling ---
 
 function processInput(input) {
     const command = input.trim().toLowerCase();
@@ -137,46 +162,16 @@ function showHelp() {
     const helpText = `
 Commands you can try:
   look - observe your surroundings
-  go [direction] - move to another place (example: go north)
+  go [direction] - move to another place (e.g., 'go north')
   sit, pet, examine [object] - interact with things around you
   help - show this list again
   `;
     typeLine(helpText.trim(), "hint");
 }
 
-// --- Terminal Behavior ---
-
-function startPrompt() {
-    const newPrompt = document.createElement("div");
-    newPrompt.className = "prompt-line";
-    newPrompt.innerText = "> ";
-    newPrompt.appendChild(cursor);
-    terminal.appendChild(newPrompt);
-    terminal.scrollTop = terminal.scrollHeight;
-}
-
-function triggerFlicker() {
-    const flicker = document.getElementById("flicker-overlay");
-    if (!flicker) return;
-
-    flicker.style.transition = "opacity 0.1s ease";
-    flicker.style.opacity = "0.8";
-
-    setTimeout(() => {
-        flicker.style.opacity = "0";
-        setTimeout(() => {
-            flicker.style.opacity = "0.4";
-            setTimeout(() => {
-                flicker.style.opacity = "0";
-            }, 80);
-        }, 100);
-    }, 100);
-}
-
-// --- Boot Sequence and Onboarding ---
+// --- Onboarding Boot Sequence ---
 
 async function playOnboarding() {
-    console.log("✨playOnboarding started!");
     await typeLine("Soft static fades. Something flickers to life.", "system");
     await delay(1000);
     await typeLine("You are connected to the Worldbuilder Interface.", "system");
@@ -185,24 +180,14 @@ async function playOnboarding() {
     await delay(800);
     await typeLine("(Type 'look' to begin.)", "hint");
     await delay(500);
-    startPrompt();
+    setPromptActive(true);
 }
 
-// --- Main DOM Content Load ---
+// --- Main Setup ---
 
 document.addEventListener("DOMContentLoaded", async () => {
     terminal = document.getElementById("terminal");
 
-    cursor = document.createElement("span");
-    cursor.className = "cursor";
-    cursor.innerText = "_";
-
-    const promptLine = document.createElement("div");
-    promptLine.className = "prompt-line";
-    promptLine.innerText = "> ";
-    promptLine.appendChild(cursor);
-
-    terminal.appendChild(promptLine);
     terminal.focus();
 
     await loadWorld();
@@ -222,42 +207,58 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (inputBuffer.length > 0) {
                 inputBuffer = inputBuffer.slice(0, -1);
 
-                // Find previous text node
                 let prev = cursor.previousSibling;
                 while (prev && prev.nodeType !== Node.TEXT_NODE) {
                     prev = prev.previousSibling;
                 }
 
                 if (prev) {
-                    // Remove last character
                     prev.textContent = prev.textContent.slice(0, -1);
                     if (prev.textContent.length === 0) {
-                        prev.remove(); // safer than terminal.removeChild(prev)
+                        prev.remove();
                     }
                 }
-            } else {
-                // No input buffer left, just ignore
             }
         }
         else if (e.key === "Enter") {
             const input = inputBuffer;
             inputBuffer = "";
 
-            render(`> ${input}`);
+            const outputArea = document.getElementById("output-area");
+            const echoLine = document.createElement("div");
+            echoLine.className = "output-line";
+            echoLine.innerText = "> " + input;
+            outputArea.appendChild(echoLine);
 
-            cursor.parentElement.remove();
+            outputArea.scrollTop = outputArea.scrollHeight;
+
+            // 🧹 Clear the input prompt manually
+            const inputArea = document.getElementById("input-area");
+            while (inputArea.firstChild) {
+                inputArea.removeChild(inputArea.firstChild);
+            }
 
             processInput(input);
-
-            const newPrompt = document.createElement("div");
-            newPrompt.className = "prompt-line";
-            newPrompt.innerText = "> ";
-            newPrompt.appendChild(cursor);
-            terminal.appendChild(newPrompt);
-
-            terminal.scrollTop = terminal.scrollHeight;
         }
     });
 });
 
-let inputBuffer = "";
+// --- CRT Flicker Effect ---
+
+function triggerFlicker() {
+    const flicker = document.getElementById("flicker-overlay");
+    if (!flicker) return;
+
+    flicker.style.transition = "opacity 0.1s ease";
+    flicker.style.opacity = "0.8";
+
+    setTimeout(() => {
+        flicker.style.opacity = "0";
+        setTimeout(() => {
+            flicker.style.opacity = "0.4";
+            setTimeout(() => {
+                flicker.style.opacity = "0";
+            }, 80);
+        }, 100);
+    }, 100);
+}

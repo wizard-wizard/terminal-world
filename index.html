@@ -18,7 +18,12 @@
 <div id="flicker-overlay"></div>
 
 <!-- Terminal -->
-<div id="terminal" aria-label="Terminal" role="textbox" tabindex="0"></div>
+<div id="terminal">
+    <div id="output-area"></div>
+    <div id="input-area">
+        > <span id="cursor" class="cursor">_</span>
+    </div>
+</div>
 
 <!-- Your JavaScript -->
 <script src="mud.js"></script>

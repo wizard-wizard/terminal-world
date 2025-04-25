@@ -140,18 +140,40 @@ button#toggleTheme:hover {
     background: #0b0c10;
     color: #c0d8c0;
     font-family: 'Fira Code', monospace;
-    padding: 1rem;
+    padding: 0.5rem;
     margin: 1rem auto;
     width: 90%;
     max-width: 720px;
     height: 400px;
-    overflow-y: auto;
-    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden; /* important! */
     border: 2px solid #3b403d;
     border-radius: 8px;
     box-shadow: 0 0 12px rgba(0, 255, 0, 0.2);
-    white-space: pre-wrap;
 }
+
+#output-area {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 0.5rem;
+    white-space: pre-wrap;
+    margin-bottom: 0.7rem;
+}
+
+#input-area {
+    border-top: 1px solid #3b403d;
+    padding-top: 0.5rem;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    min-height: 2rem;
+    background: #0b0c10;
+    z-index: 2;
+}
+
 
 .prompt-line {
     display: inline;
