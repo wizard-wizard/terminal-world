@@ -1,0 +1,28 @@
+{
+  "office": {
+    "description": "This is a hexagonal room in the corner of the house, nestled under a slanted roof. The walls are covered in maps and calendars. Two bookshelves flank the workspace, and there is a window that looks out at the sea.",
+    "exits": {
+      "south": "observatory",
+      "north": "start"
+    }
+  },
+  "start": {
+    "description": "You are in a quiet room with soft lighting.\nUnderfoot is a soft, colorful rug.",
+    "exits": {
+      "north": "attic",
+      "south": "office"
+    }
+  },
+  "attic": {
+    "description": "Dust swirls in beams of light between old boxes. The boxes are all neatly labeled. A rocking chair casts an inviting shadow.\nFrom the corner, a cat eyes you with suspicion.",
+    "exits": {
+      "south": "start"
+    }
+  },
+  "observatory": {
+    "description": "You stand on an outdoor platform with a sturdy wooden railing. Greeting you in all directions is the estuarial bay, featuring a passel of shorebirds, weird ducks, and an occasional mink swimming past. ",
+    "exits": {
+      "north": "office"
+    }
+  }
+}

@@ -1,0 +1,173 @@
+/* Moss & Inked Glass Theme */
+
+body {
+    background: #1a2421; /* deep forest moss */
+    font-family: 'Fira Code', monospace;
+    color: #e2f0e9; /* soft mint parchment */
+    padding: 2rem;
+    max-width: 800px;
+    margin: auto;
+    line-height: 1.6;
+}
+
+h1 {
+    font-size: 1.6rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #e2f0e9;
+}
+
+#output {
+    background: #202f2c; /* shaded pond water */
+    border: 2px solid #5a7a72; /* muted sage */
+    border-radius: 10px;
+    padding: 1rem;
+    min-height: 300px;
+    font-size: 1.1rem;
+    color: #e2f0e9;
+    white-space: pre-wrap;
+    overflow-y: auto;
+    box-shadow: 0 0 12px rgba(112, 165, 145, 0.2); /* glowy algae */
+    margin-bottom: 1.5rem;
+    transition: background 0.4s ease, color 0.4s ease;
+}
+
+#input-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#prompt {
+    font-family: monospace;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #6fbfbe; /* watery teal ink */
+}
+
+#input {
+    flex: 1;
+    background: #13201e;
+    color: #e2f0e9;
+    border: 1px solid #5a7a72;
+    padding: 0.75rem;
+    font-size: 1.1rem;
+    border-radius: 6px;
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.6);
+}
+
+#input::placeholder {
+    color: #9fb8b0;
+    font-style: italic;
+}
+
+#input:focus {
+    outline: none;
+    border-color: #6fbfbe;
+    box-shadow: 0 0 6px #6fbfbe;
+}
+
+.cursor {
+    display: inline-block;
+    animation: blink 1s step-start infinite;
+    color: #a9f2e5; /* luminous moss-glow */
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    50.1%, 100% { opacity: 0; }
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+button#toggleTheme {
+    background: #202f2c;
+    border: 1px solid #5a7a72;
+    color: #e2f0e9;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    box-shadow: 0 0 4px rgba(112, 165, 145, 0.3);
+    transition: background 0.3s ease;
+}
+
+button#toggleTheme:hover {
+    background: #2e3e3a;
+}
+
+.line.default {
+    color: #e2f0e9;
+}
+
+.line.system {
+    color: #89b5aa;
+    font-style: italic;
+}
+
+.line.action {
+    color: #a3f3c6;
+}
+
+.line.error {
+    color: #ffaaaa;
+    font-weight: bold;
+}
+
+.line.input {
+    color: #6fbfbe;
+}
+
+.line {
+    margin-bottom: 0.5em;
+}
+
+.line {
+    opacity: 0;
+    animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+    to { opacity: 1; }
+}
+
+#terminal {
+    background: #202f2c;
+    color: #e2f0e9;
+    padding: 1rem;
+    border: 2px solid #5a7a72;
+    min-height: 300px;
+    font-family: 'Fira Code', monospace;
+    white-space: pre-wrap;
+    overflow-y: auto;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    border-radius: 10px;
+    outline: none;
+}
+
+.prompt-line {
+    display: inline;
+}
+
+.cursor {
+    display: inline-block;
+    width: 1ch;
+    animation: blink 1s step-start infinite;
+    color: #a9f2e5;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    50.1%, 100% { opacity: 0; }
+}
+
+.line.hint {
+    color: #9fb8b0; /* soft teal/grey */
+    font-style: italic;
+}
