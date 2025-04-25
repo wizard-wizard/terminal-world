@@ -50,6 +50,18 @@ const state = {
 let terminal;
 let cursor;
 
+function render(text, options = {}) {
+    const outputLine = document.createElement("div");
+    outputLine.className = "output-line"; // you can style this later
+
+    outputLine.innerText = text;
+    terminal.insertBefore(outputLine, cursor.parentElement);
+
+    if (!options.noScroll) {
+        terminal.scrollTop = terminal.scrollHeight;
+    }
+}
+
 // --- Room Class and World Loader ---
 
 class Room {
@@ -225,16 +237,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
             } else {
                 // No input buffer left, just ignore
-                // (no errors, no flickers, no bad feels)
             }
         }
         else if (e.key === "Enter") {
             const input = inputBuffer;
             inputBuffer = "";
 
-            const echo = document.createElement("div");
-            echo.innerText = `> ${input}`;
-            terminal.insertBefore(echo, cursor.parentElement);
+            render(`> ${input}`);
 
             cursor.parentElement.remove();
 
