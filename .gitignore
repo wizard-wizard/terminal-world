@@ -1,1 +1,8 @@
+#JetBrains goop
 /.idea/
+
+# macOS system files
+.DS_Store
+
+#Node.js gremlins
+node_modules/
