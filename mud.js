@@ -90,27 +90,44 @@ function render(text, options = {}) {
 // --- Room and World Loader ---
 
 class Room {
-    constructor(descriptionFn, exits = {}, actions = {}) {
+    constructor(descriptionFn, exits = {}, actions = {}, objects = {}) {
         this.getDescription = descriptionFn;
         this.exits = exits;
         this.actions = actions;
+        this.objects = objects;
     }
 }
+
 
 function createRoomsFromData(data) {
     for (const id in data) {
         const roomData = data[id];
+
         const descFn = typeof roomData.description === "function"
             ? roomData.description
             : () => roomData.description;
 
+        // Handle objects if they exist
+        const objects = {};
+        if (roomData.objects) {
+            for (const objId in roomData.objects) {
+                const objData = roomData.objects[objId];
+                objects[objId] = {
+                    description: objData.description,
+                    actions: objData.actions || {}
+                };
+            }
+        }
+
         rooms[id] = new Room(
             descFn,
             roomData.exits || {},
-            roomData.actions || {}
+            {}, // room-specific actions (for later expansion)
+            objects // 🧩 new!
         );
     }
 }
+
 
 async function loadWorld() {
     const res = await fetch('./world.json');
@@ -123,40 +140,51 @@ async function loadWorld() {
 function processInput(input) {
     const command = input.trim().toLowerCase();
 
+    if (!command) return;
+
+    const currentRoom = rooms[state.location];
+
+    // Global simple commands
     if (command === "look") {
-        const currentRoom = rooms[state.location];
-        typeLine(currentRoom.getDescription(state));
+        render(currentRoom.getDescription(state));
         return;
     }
-
+    if (command === "help") {
+        render("Available commands:\n- look\n- go [direction]\n- examine [object]\n- pet [object]\n- open [object] (if available)");
+        return;
+    }
     if (command.startsWith("go ")) {
         const direction = command.slice(3);
-        const currentRoom = rooms[state.location];
-
         if (currentRoom.exits[direction]) {
             state.location = currentRoom.exits[direction];
-            typeLine(`You go ${direction}.`);
-            typeLine(rooms[state.location].getDescription(state));
+            render(`You go ${direction}.\n`);
+            render(rooms[state.location].getDescription(state));
         } else {
-            typeLine("You can't go that way.");
+            render("You can't go that way.");
         }
         return;
     }
 
-    if (command === "help") {
-        showHelp();
+    // Object interaction parsing
+    const words = command.split(" ");
+    const verb = words[0];
+    const noun = words.slice(1).join(" ");
+
+    if (noun && currentRoom.objects[noun]) {
+        const obj = currentRoom.objects[noun];
+        if (obj.actions[verb]) {
+            render(obj.actions[verb]);
+        } else {
+            render(`You can't ${verb} the ${noun}.`);
+        }
         return;
     }
 
-    const currentRoom = rooms[state.location];
-    if (currentRoom.actions && currentRoom.actions[command]) {
-        const result = currentRoom.actions[command]();
-        typeLine(result);
-        return;
-    }
-
-    typeLine("That won't work here.");
+    // Unknown command fallback
+    render("That won't work here.");
 }
+
+
 
 function showHelp() {
     const helpText = `
@@ -172,7 +200,7 @@ Commands you can try:
 // --- Onboarding Boot Sequence ---
 
 async function playOnboarding() {
-    await typeLine("Soft static fades. Something flickers to life.", "system");
+    await typeLine("Something behind the dark screen flickers to life.", "system");
     await delay(1000);
     await typeLine("You are connected to the Worldbuilder Interface.", "system");
     await delay(800);

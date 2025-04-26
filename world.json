@@ -1,28 +1,63 @@
 {
-  "office": {
-    "description": "This is a hexagonal room in the corner of the house, nestled under a slanted roof. The walls are covered in maps and calendars. Two bookshelves flank the workspace, and there is a window that looks out at the sea.",
-    "exits": {
-      "south": "observatory",
-      "north": "start"
-    }
-  },
   "start": {
-    "description": "You are in a quiet room with soft lighting.\nUnderfoot is a soft, colorful rug.",
+    "description": "You are in a bare-bones starting room with a humming computer terminal.",
     "exits": {
       "north": "attic",
-      "south": "office"
+      "east": "office"
+    },
+    "objects": {
+      "terminal": {
+        "description": "An old terminal, its screen on but blank.",
+        "actions": {
+          "examine": "The terminal hums. The command prompt blinks, waiting.",
+          "use": "You tap a few keys, but nothing new happens yet."
+        }
+      }
     }
   },
+
   "attic": {
-    "description": "Dust swirls in beams of light between old boxes. The boxes are all neatly labeled. A rocking chair casts an inviting shadow.\nFrom the corner, a cat eyes you with suspicion.",
+    "description": "Dust swirls in beams of light between old boxes and forgotten furniture.",
     "exits": {
       "south": "start"
+    },
+    "objects": {
+      "cat": {
+        "description": "A sleepy cat curled up on a wooden trunk.",
+        "actions": {
+          "examine": "The cat blinks at you and yawns.",
+          "pet": "The cat purrs so loudly it echoes in the attic."
+        }
+      },
+      "rocking chair": {
+        "description": "A slightly creaky but inviting rocking chair.",
+        "actions": {
+          "examine": "The chair looks very comfortable. The cushion has an indentation the exact size of the cat."
+        }
+      }
     }
   },
-  "observatory": {
-    "description": "You stand on an outdoor platform with a sturdy wooden railing. Greeting you in all directions is the estuarial bay, featuring a passel of shorebirds, weird ducks, and an occasional mink swimming past. ",
+
+  "office": {
+    "description": "A small hexagonal office, lined with shelves of books and maps. \nA big window looks out over the water.",
     "exits": {
-      "north": "office"
+      "west": "start"
+    },
+    "objects": {
+      "bookshelf": {
+        "description": "A heavy wooden bookshelf packed with titles in several languages.",
+        "actions": {
+          "examine": "Many of the books are about Roman History, the Latin language, and architecture.",
+          "search": "In addition to books, there are folders full of notes. \nThere are no secret treats here."
+        }
+      },
+      "desk": {
+        "description": "A cluttered desk covered in notes and boxes.",
+        "actions": {
+          "examine": "Someone has built a wall to keep cats and pigeons off the keyboard. Rude!.",
+          "open box": "Inside the box, you find a candy bar."
+        }
+      }
     }
   }
 }
